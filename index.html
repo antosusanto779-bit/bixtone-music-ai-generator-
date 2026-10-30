@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIXTONE MUSIC AI GENERATOR - Bixlabs Boyolali</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(180deg,#000428,#004e92);color:#fff;font-family:Arial;min-height:100vh;padding:15px}
+.header{text-align:center;padding:20px 0;border-bottom:2px solid #00d4ff;margin-bottom:20px}
+.logo{font-size:28px;font-weight:900;color:#00d4ff;text-shadow:0 0 10px #00d4ff}
+.tagline{color:#ffd700;margin-top:5px;font-weight:700}
+.card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border:1px solid rgba(0,212,255,0.3);border-radius:15px;padding:15px;margin-bottom:15px}
+label{display:block;color:#00d4ff;font-weight:700;margin:12px 0 5px}
+select,textarea,input{width:100%;padding:12px;border-radius:10px;border:1px solid #00d4ff;background:rgba(0,0,0,0.5);color:#fff;font-size:14px}
+textarea{min-height:100px}
+.btn{width:100%;padding:15px;border-radius:12px;border:none;font-weight:900;font-size:16px;cursor:pointer;margin-top:10px}
+.btn-gen{background:linear-gradient(90deg,#00d4ff,#0077ff);color:#fff}
+.btn-lyrics{background:linear-gradient(90deg,#ffd700,#ff8c00);color:#000}
+.player{margin-top:15px;display:none}
+audio{width:100%;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">🎵 BIXTONE MUSIC AI GENERATOR 🎵</div>
+<div class="tagline">WUJUDKAN MIMPI DAN CIPTAKAN LAGU TANPA BATAS - BIXLABS BOYOLALI</div>
+</div>
+
+<div class="card">
+<label>(A) Karakter Vokal (80):</label>
+<select id="char"><option>Female Solo Vocal, Emotional</option><option>Female Broken Heart, Crying</option><option>Male Solo Vocal, Sad</option><option>Male Whisper, Heartbroken</option><option>Female Child Vocal, Sad</option></select>
+
+<label>(B) Mood (80):</label>
+<select id="mood"><option>Heartbroken, Sad, Galau</option><option>Broken, Crying, Emotional</option><option>Sad, Rainy Day, Mellow</option><option>Happy, Energetic, Upbeat</option><option>Romantic, Love, Dreamy</option></select>
+
+<label>(C) Genre (150):</label>
+<select id="genre"><option>Pop Ballad, Slow Rock</option><option>Emotional Pop, Sad Ballad</option><option>Indie Pop, Mellow</option><option>R&B Slow, Soulful</option><option>Acoustic Ballad, Guitar</option></select>
+
+<label>(D) Mode:</label>
+<select id="mode"><option value="music">🎤 Music + Vocal (with Lyrics)</option><option value="instrumental">🎼 Instrumental Only</option></select>
+
+<label>Tema / Cerita Lagu:</label>
+<textarea id="theme" placeholder="Contoh: Ditinggal nikah, masih cinta, hujan malam minggu..."></textarea>
+
+<label>Lirik (Auto / Manual):</label>
+<textarea id="lyrics" placeholder="Klik Generate Lirik dulu atau tulis manual..."></textarea>
+
+<button class="btn btn-lyrics" onclick="genLyrics()">✨ GENERATE LIRIK OTOMATIS</button>
+<button class="btn btn-gen" onclick="genMusic()">🎵 GENERATE MUSIK AI (GRATIS)</button>
+
+<div class="player" id="playerBox">
+<h3 style="color:#00ff88">✅ Lagu Jadi!</h3>
+<audio id="audio" controls></audio>
+<p id="status" style="margin-top:10px;color:#ffd700"></p>
+</div>
+</div>
+
+<script>
+async function genLyrics(){
+  const theme=document.getElementById('theme').value||"Cinta yang hilang";
+  const mood=document.getElementById('mood').value;
+  const genre=document.getElementById('genre').value;
+  document.getElementById('lyrics').value="Generating lirik...";
+  try{
+    const res=await fetch('/api/lyrics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme,moods:mood,genres:genre})});
+    const data=await res.json();
+    document.getElementById('lyrics').value=data.lyrics;
+  }catch(e){document.getElementById('lyrics').value="[Verse]\n"+theme+"\n\n[Chorus]\nWujudkan mimpi ciptakan lagu tanpa batas\nBersama Bixtone";}
+}
+async function genMusic(){
+  const char=document.getElementById('char').value;
+  const mood=document.getElementById('mood').value;
+  const genre=document.getElementById('genre').value;
+  const mode=document.getElementById('mode').value;
+  const theme=document.getElementById('theme').value||"Lagu galau";
+  const lyrics=document.getElementById('lyrics').value;
+  const prompt=`${char}, ${mood}, ${genre}, ${theme}`;
+  const box=document.getElementById('playerBox');
+  const audio=document.getElementById('audio');
+  const status=document.getElementById('status');
+  box.style.display='block';
+  status.innerText='⏳ Generating musik AI gratis (30-60 detik)... Tunggu ya Mas Anto...';
+  try{
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({universalPrompt:prompt,lyrics,mode})});
+    const data=await res.json();
+    audio.src=data.audio_url;
+    audio.play();
+    status.innerText='✅ SUKSES! Engine: '+(data.engine||'FREE')+' - Gratis tanpa API Key! Bixlabs Boyolali';
+  }catch(e){status.innerText='❌ Gagal, coba lagi Mas. HF Space mungkin antri.';}
+}
+</script>
+</body>
+</html>
