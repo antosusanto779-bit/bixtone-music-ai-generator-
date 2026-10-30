@@ -110,3 +110,74 @@ audio{width:100%;margin:8px 0}
 const vocals=["Female Solo Emotional","Female Broken Heart Crying","Female Whisper Sad","Female Power Ballad High","Female Child Sad","Female Teen Pop","Female Mature Soulful","Female Husky Sad","Female Javanese Soft","Female Sinden Traditional","Female Dangdut Slow","Female Keroncong Soft","Female Sholawat Clear","Female Rap Melodic Sad","Female R&B Soulful","Male Solo Sad","Male Broken Deep","Male Whisper Heartbroken","Male Rock Ballad Crying","Male Child Innocent","Male Teen Sad","Male Baritone Warm","Male Bass Deep Sad","Male Javanese Deep","Male Dangdut Rough","Male Rap Sad Javanese","Male R&B Mellow","Male Choir Emotional","Female Choir Angelic","Mixed Duet Romantic Sad","Javanese Duet Male Female","Broken Couple Duet","Children Choir Sad","Gospel Choir Emotional","Vocaloid Female Sad","Vocaloid Male Sad","AI Female Ultra Emotional","AI Male Ultra Sad","Javanese Sindhen Female","Javanese Dalang Male","Sundanese Jaipong Female","Batak Power Female","Ambon Soul Male","Bugis Sad Male","Minang Slow Female","Malay Slow Male","Dangdut Koplo Female","Dangdut Koplo Male","Pop Ballad Male"];
 const moods=["Heartbroken Sad Galau Crying","Broken Crying Emotional Hurt","Sad Rainy Mellow Lonely","Happy Energetic Upbeat Joy","Romantic Love Dreamy Longing","Angry Betrayed Revenge Hurt","Healing Move On Sincere","Spiritual Calm Peaceful","Nostalgia Missing Longing","Jealous Suspicious","Hopeful Rising Spirit","Anxious Restless Night","Mellow Coffee Rain","Dark Depressive Deep Sad","Cheerful Dangdut Happy","Javanese Ambyar Broken","Javanese Love Longing","Javanese Angry Disappointed","Sundanese Love Longing","Batak Deep Love"];
 const genres=["Pop Ballad Slow Rock","Emotional Pop Sad Ballad","Indie Pop Mellow","R&B Slow Soulful","Acoustic Ballad Guitar","Javanese Pop Sad Ambyar","Campursari Modern","Dangdut Koplo Slow","Dangdut Original Slow","Keroncong Modern","Gamelan Javanese Lo-fi","Gamelan Balinese Energetic","Koplo East Java","Pop Javanese Koplo","Sholawat Pop","Reggae Mellow","Rock Ballad 90s","Metal Ballad","EDM Sad Emotional","Lo-fi Hip Hop Sad","Jazz Mellow Night","Blues Sad Guitar","Country Sad Story","Trap Sad Melodic","Drill Sad Javanese","K-Pop Ballad Sad","J-Pop Emotional","Arabic Pop Sad","Indian Bollywood Sad","Sundanese Pop Mellow","Batak Pop Tapanuli","Ambon Pop Mellow","Malay Deli Slow","DJ Remix Slow Sad","Funky Pop Happy","Disco 80s Mellow","Classical Piano Sad","Orchestra Emotional","Folk Acoustic Story","Gospel Choir Emotional","Acapella Emotional","Children Sad Song","Lullaby Sad Mother","Trap Javanese","Koplo Ambyar Full"];
+const instruments=["Piano Grand","Piano Upright","Electric Piano","Keyboard","Synthesizer","Organ Church","Accordion","Bandoneon","Harmonium","Kendang Javanese","Kendang Sundanese","Kendang Balinese","Bedug Drum","Rebana","Hadrah","Tifa Papua","Gendang Malay","Tabla India","Dhol","Cajon","Drum Kit Acoustic","Drum Electric","Bass Electric","Bass Acoustic","Bass Upright","Guitar Acoustic","Guitar Electric","Guitar Classical","Ukulele","Banjo","Mandolin","Sitar India","Sarod","Veena","Erhu China","Guzheng China","Pipa China","Shakuhachi Japan","Koto Japan","Shamisen Japan","Gamelan Bonang","Gamelan Saron","Gamelan Gambang","Gamelan Gender","Gamelan Gong","Angklung","Sasando","Kolintang","Sampe Dayak","Violin","Viola","Cello","Double Bass","Harp","Harp Celtic","Saxophone Alto","Saxophone Tenor","Saxophone Soprano","Trumpet","Trombone","French Horn","Tuba","Clarinet","Flute Classical","Flute Bamboo Javanese","Flute Bamboo Sundanese","Seruling Malay","Recorder","Oboe","Bassoon","Bagpipe Scotland","Bagpipe Irish","Tin Whistle","Harmonica","Melodica","Morin Khuur Mongolia","Duduk Armenia","Oud Arabic","Qanun Arabic","Ney Flute Arabic","Rebab Arabic","Kora Africa","Mbira Africa","Balafon Africa","Djembe Africa","Didgeridoo Australia","Pan Flute Andes","Charango Andes","Balalaika Russia","Bou Bouzouki Greek","Alphorn Swiss","Hang Drum","Steel Pan Caribbean","Marimba","Xylophone","Vibraphone","Glockenspiel","Kalimba","Theremin","Santoor","Sarangi","Bansuri Flute India","Shehnai India","Gamelan Jegog Bali","Kendang Beleq Lombok","Rapab Aceh","Talempong Minang","Saluang Minang","Serune Kale Aceh","Tatabuang Maluku","Fuu Papua","Kecapi Sundanese","Siter Javanese","Rebab Javanese","Gong Ageng Javanese","Kempul Javanese","Kenong Javanese","Bonang Barung","Demung","Peking","Slenthem","Saron","Kethuk","Kempyang","Ceng Ceng Bali","Reyong Bali","Kendang Male Female","Tawa Tawa Sulawesi","Paeng Maumere","Sasando Electric","Kulintang Philippines","Sape Borneo","Garantung Batak","Hasapi Batak","Gondang Batak","Suling Batak","Tulila Gorontalo","Kacapi Bugis","Pa'gellu Toraja"];
+
+let selectedInst=[];
+const box=document.getElementById('instrumentBox');
+instruments.forEach(name=>{
+ const chip=document.createElement('div'); chip.className='chip'; chip.innerText=name;
+ chip.onclick=()=>{
+  if(chip.classList.contains('selected')){chip.classList.remove('selected'); selectedInst=selectedInst.filter(x=>x!==name);}
+  else{if(selectedInst.length>=8){alert('Maximum 8 instruments allowed. Remove one first.');return;} chip.classList.add('selected'); selectedInst.push(name);}
+  document.getElementById('instCounter').innerText=`${selectedInst.length} / 8 selected: ${selectedInst.join(', ')}`;
+ };
+ box.appendChild(chip);
+});
+function fillSelect(id,arr){ const s=document.getElementById(id); arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=v; s.appendChild(o); }); }
+fillSelect('vocalChar',vocals); fillSelect('mood',moods); fillSelect('genre',genres);
+async function genLyrics(){
+ const theme=document.getElementById('theme').value||'Lost love story';
+ document.getElementById('lyrics').value='Generating lyrics...';
+ try{
+  const r=await fetch('/api/lyrics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme,moods:document.getElementById('mood').value,genres:document.getElementById('genre').value})});
+  const d=await r.json(); document.getElementById('lyrics').value=d.lyrics;
+ }catch(e){ document.getElementById('lyrics').value=`[Verse]\n${theme}\nHeart is broken in the rain\n\n[Chorus]\nI am falling, broken heart\nYou left me alone\n\n[Outro]\nI am sincere, BIXTONE Boyolali`; }
+}
+async function genMusic(){
+ const status=document.getElementById('status'); const audio=document.getElementById('audio'); const box=document.getElementById('playerBox');
+ box.style.display='block'; status.innerText='Generating music with BIXTONE AI engine... Please wait 30-60 seconds';
+ const payload={
+  universalPrompt:`${document.getElementById('vocalChar').value}, ${document.getElementById('vocalType').value} ${document.getElementById('vocalAge').value}, ${document.getElementById('mood').value} ${document.getElementById('moodIntensity').value}, ${document.getElementById('genre').value} ${document.getElementById('subGenre').value}, Instruments: ${selectedInst.join(', ')}`,
+  lyrics:document.getElementById('lyrics').value,
+  mode:document.getElementById('mode').value,
+  duration:document.getElementById('duration').value
+ };
+ try{
+  const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json();
+  if(d.audio_url){ audio.src=d.audio_url; audio.play(); status.innerText=`SUCCESS! Engine: ${d.engine||'BIXTONE AI'} | Instruments: ${selectedInst.length}`; window.lastAudio=d.audio_url; return; }
+  throw new Error('no audio');
+ }catch(err){
+  status.innerHTML='HF Space busy. Playing LOCAL OFFLINE DEMO - Piano Sad Chord...';
+  const ctx=new (window.AudioContext||window.webkitAudioContext)(); const dest=ctx.createMediaStreamDestination(); const rec=new MediaRecorder(dest.stream); const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data);
+  rec.onstop=()=>{ const blob=new Blob(chunks,{type:'audio/webm'}); audio.src=URL.createObjectURL(blob); window.lastAudio=audio.src; audio.play(); };
+  rec.start();
+  const play=(freqs,t,dur)=>{freqs.forEach(f=>{const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);g.connect(dest);o.frequency.value=f;o.type='triangle';g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.12,t+0.1);g.gain.linearRampToValueAtTime(0,t+dur);o.start(t);o.stop(t+dur);});};
+  let t=ctx.currentTime; const prog=[[220,261,329],[174,220,261],[261,329,392],[196,246,293]]; for(let i=0;i<5;i++){prog.forEach(c=>{play(c,t,2.5);t+=2.5;});}
+  setTimeout(()=>rec.stop(),13000);
+ }
+}
+function downloadAs(fmt){ if(!window.lastAudio){alert('Generate a song first!');return;} const a=document.createElement('a'); a.href=window.lastAudio; a.download=`BIXTONE-${Date.now()}.${fmt}`; a.click(); }
+function shareWA(){ const text=`Listen to my song created with BIXTONE MUSIC AI - BIXLABS BOYOLALI! ${window.lastAudio||location.href}`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+function shareFB(){ window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.lastAudio||location.href)}`); }
+function copyLink(){ navigator.clipboard.writeText(window.lastAudio||location.href); alert('Link copied!'); }
+function saveToLibrary(){
+ const lib=JSON.parse(localStorage.getItem('bixtone_lib')||'[]');
+ lib.unshift({id:Date.now(),title:document.getElementById('theme').value||'Untitled Song',vocal:document.getElementById('vocalChar').value,mood:document.getElementById('mood').value,genre:document.getElementById('genre').value,inst:selectedInst.join(','),audio:window.lastAudio||'',date:new Date().toLocaleString()});
+ localStorage.setItem('bixtone_lib',JSON.stringify(lib)); renderLib();
+}
+function renderLib(){
+ const box=document.getElementById('libraryBox'); const lib=JSON.parse(localStorage.getItem('bixtone_lib')||'[]');
+ box.innerHTML=''; if(lib.length===0){box.innerHTML='<p style="font-size:10px;color:#888">No songs yet. Generate and save.</p>';return;}
+ lib.forEach(item=>{
+  const div=document.createElement('div'); div.className='lib-item';
+  div.innerHTML=`<div><b>${item.title}</b><br><span style="color:#aaa">${item.vocal} - ${item.mood}</span><br><span>${item.date}</span></div><div><button onclick="playLib('${item.audio}')" style="background:#00d4ff;border:none;padding:4px 7px;border-radius:4px">Play</button></div>`;
+  box.appendChild(div);
+ });
+}
+function playLib(url){ if(url){ document.getElementById('audio').src=url; document.getElementById('audio').play(); document.getElementById('playerBox').style.display='block'; } }
+function clearLibrary(){ if(confirm('Delete all library?')){ localStorage.removeItem('bixtone_lib'); renderLib(); } }
+renderLib();
+</script>
+</body>
+</html>
