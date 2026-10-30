@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIXTONE MUSIC AI - FIX FINAL</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(180deg,#000428,#004e92);color:#fff;font-family:Arial;padding:15px;min-height:100vh}.header{text-align:center;padding:15px 0;border-bottom:2px solid #00d4ff;margin-bottom:15px}.logo{font-size:24px;font-weight:900;color:#00d4ff}.tagline{color:#ffd700;font-size:12px;margin-top:5px}.card{background:rgba(255,255,255,0.08);border:1px solid #00d4ff;border-radius:15px;padding:15px}label{color:#00d4ff;font-weight:700;margin:10px 0 5px;display:block}select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #00d4ff;background:rgba(0,0,0,0.5);color:#fff}textarea{min-height:90px}.btn{width:100%;padding:14px;border-radius:12px;border:none;font-weight:900;margin-top:10px;cursor:pointer}.btn-lyrics{background:linear-gradient(90deg,#ffd700,#ff8c00)}.btn-gen{background:linear-gradient(90deg,#00d4ff,#0077ff);color:#fff}audio{width:100%;margin-top:10px}</style></head><body>
+<div class="header"><div class="logo">🎵 BIXTONE MUSIC AI GENERATOR 🎵</div><div class="tagline">WUJUDKAN MIMPI DAN CIPTAKAN LAGU TANPA BATAS - BIXLABS BOYOLALI - FIX FINAL</div></div>
+<div class="card">
+<label>(A) Karakter Vokal (80):</label><select id="char"><option>Female Solo Vocal, Emotional</option><option>Female Broken Heart, Crying</option><option>Male Solo Vocal, Sad</option></select>
+<label>(B) Mood (80):</label><select id="mood"><option>Heartbroken, Sad, Galau</option><option>Sad, Rainy, Mellow</option><option>Happy, Upbeat</option></select>
+<label>(C) Genre (150):</label><select id="genre"><option>Pop Ballad, Slow Rock</option><option>Emotional Pop, Sad Ballad</option><option>Jawa Galau, Campursari Mellow</option></select>
+<label>(D) Mode:</label><select id="mode"><option value="music">🎤 Music + Vocal (with Lyrics)</option><option value="instrumental">🎼 Instrumental Only</option></select>
+<label>Tema / Cerita Lagu:</label><textarea id="theme" placeholder="Ditinggal nikah, masih cinta..."></textarea>
+<label>Lirik (Auto / Manual):</label><textarea id="lyrics">[Outro]&#10;Wes rubuh...&#10;Mergo kesuen mbok tinggalke...&#10;Aku dudu tempat persinggahan...</textarea>
+<button class="btn btn-lyrics" onclick="genLyrics()">✨ GENERATE LIRIK OTOMATIS</button>
+<button class="btn btn-gen" onclick="genMusic()">🎵 GENERATE MUSIK AI (GRATIS)</button>
+<div id="playerBox" style="margin-top:15px;display:block"><h3 id="judul" style="color:#00ff88">✅ Lagu Jadi!</h3><audio id="audio" controls></audio><p id="status" style="color:#ffd700;margin-top:8px;font-size:13px"></p></div>
+</div>
+<script>
+async function genLyrics(){
+ const theme=document.getElementById('theme').value||"Cinta hilang";
+ document.getElementById('lyrics').value="Generating lirik Jawa galau...";
+ try{
+  const res=await fetch('/api/lyrics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme,moods:document.getElementById('mood').value,genres:document.getElementById('genre').value})});
+  const data=await res.json(); document.getElementById('lyrics').value=data.lyrics;
+ }catch(e){ document.getElementById('lyrics').value=`[Verse]\n${theme}\n\n[Chorus]\nWes rubuh atiku...\nMergo kesuen mbok tinggalke...\nAku dudu tempat persinggahan...\n\n[Outro]\nWes ikhlas...`; }
+}
+async function genMusic(){
+ const status=document.getElementById('status'); const audio=document.getElementById('audio');
+ status.innerText='⏳ Mencoba engine AI gratis... (30 detik)';
+ try{
+  const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({universalPrompt:document.getElementById('char').value+','+document.getElementById('mood').value+','+document.getElementById('genre').value+','+document.getElementById('theme').value,lyrics:document.getElementById('lyrics').value,mode:document.getElementById('mode').value})});
+  const data=await res.json();
+  if(data.audio_url && !data.audio_url.includes('pixabay')){ audio.src=data.audio_url; audio.play(); status.innerText='✅ SUKSES! Engine: '+(data.engine||'AI')+' - Bixlabs Boyolali'; return; }
+  throw new Error('HF antri');
+ }catch(err){
+  status.innerHTML='⚠️ HF Space antri (jam 01:31 WIB).<br>Memutar <b>DEMO INSTRUMENTAL LOKAL - Piano Galau Jawa</b> buatan HP Mas sendiri (offline, tidak 0:00 lagi!)...';
+  // FALLBACK: Generate piano galau lokal pakai Web Audio API - tidak pernah 0:00 lagi
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const dest=ctx.createMediaStreamDestination(); const rec=new MediaRecorder(dest.stream); const chunks=[];
+  rec.ondataavailable=e=>chunks.push(e.data);
+  rec.onstop=()=>{ const blob=new Blob(chunks,{type:'audio/webm'}); audio.src=URL.createObjectURL(blob); audio.play(); status.innerHTML+='<br>✅ <b>Lagu demo lokal jadi!</b> Ini chord Am-F-C-G galau Jawa 20 detik. Besok coba lagi, HF akan bangun.'; };
+  rec.start();
+  const playChord=(freqs,time,dur)=>{ freqs.forEach(f=>{ const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); g.connect(dest); o.frequency.value=f; o.type='triangle'; g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(0.15,time+0.1); g.gain.linearRampToValueAtTime(0,time+dur); o.start(time); o.stop(time+dur); }); };
+  const chords=[[220,261,329],[174,220,261],[261,329,392],[196,246,293]]; let t=ctx.currentTime;
+  for(let i=0;i<6;i++){ chords.forEach(c=>{ playChord(c,t,2.5); t+=2.5; }); }
+  setTimeout(()=>rec.stop(), 15500);
+ }
+}
+</script></body></html>
