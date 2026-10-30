@@ -60,3 +60,53 @@ audio{width:100%;margin:8px 0}
 <label>Select up to 8 instruments (Click to select):</label>
 <div class="chip-container" id="instrumentBox"></div>
 <div class="counter" id="instCounter">0 / 8 selected</div>
+<div class="section">E. Generation Mode</div>
+<div class="grid2">
+<div><label>Mode</label><select id="mode"><option value="music">Song with Vocal and Lyrics</option><option value="instrumental">Instrumental Only</option><option value="vocal_only">Vocal Only Acapella</option></select></div>
+<div><label>Duration</label><select id="duration"><option value="30">30 Seconds Demo</option><option value="60">60 Seconds Standard</option><option value="120">120 Seconds Full</option><option value="180">180 Seconds Extended</option></select></div>
+</div>
+
+<div class="section">Theme / Story</div>
+<textarea id="theme" placeholder="Example: Lost love, rainy night, still waiting, heartbreak story..."></textarea>
+
+<div class="section">Lyrics (Auto / Manual)</div>
+<textarea id="lyrics" placeholder="Click Generate Lyrics or write manually. Use [Verse], [Chorus], [Outro]"></textarea>
+
+<button class="btn btn-lyrics" onclick="genLyrics()">GENERATE LYRICS AUTOMATIC</button>
+<button class="btn btn-generate" onclick="genMusic()">GENERATE MUSIC AI (FREE)</button>
+
+<div class="player-section" id="playerBox">
+<h3 style="color:#00ff88;font-size:12px">SONG GENERATED SUCCESSFULLY</h3>
+<audio id="audio" controls></audio>
+<p id="status" style="color:#ffd700;font-size:10px;margin:6px 0"></p>
+
+<div class="section">Download All Formats</div>
+<div class="format-grid">
+<button class="btn btn-download" onclick="downloadAs('mp3')">MP3</button>
+<button class="btn btn-download" onclick="downloadAs('wav')">WAV</button>
+<button class="btn btn-download" onclick="downloadAs('flac')">FLAC</button>
+<button class="btn btn-download" onclick="downloadAs('ogg')">OGG</button>
+<button class="btn btn-download" onclick="downloadAs('m4a')">M4A</button>
+<button class="btn btn-download" onclick="downloadAs('midi')">MIDI</button>
+</div>
+
+<div class="section">Share Song</div>
+<div class="format-grid">
+<button class="btn btn-share" onclick="shareWA()">WhatsApp</button>
+<button class="btn btn-share" onclick="shareFB()">Facebook</button>
+<button class="btn btn-share" onclick="copyLink()">Copy Link</button>
+</div>
+
+<div class="section">Song Library / Archive</div>
+<div style="display:flex;gap:6px;margin-bottom:6px">
+<button class="btn btn-share" style="flex:1" onclick="saveToLibrary()">Save to Library</button>
+<button class="btn btn-share" style="flex:1" onclick="clearLibrary()">Clear</button>
+</div>
+<div id="libraryBox" style="max-height:180px;overflow-y:auto"></div>
+</div>
+</div>
+
+<script>
+const vocals=["Female Solo Emotional","Female Broken Heart Crying","Female Whisper Sad","Female Power Ballad High","Female Child Sad","Female Teen Pop","Female Mature Soulful","Female Husky Sad","Female Javanese Soft","Female Sinden Traditional","Female Dangdut Slow","Female Keroncong Soft","Female Sholawat Clear","Female Rap Melodic Sad","Female R&B Soulful","Male Solo Sad","Male Broken Deep","Male Whisper Heartbroken","Male Rock Ballad Crying","Male Child Innocent","Male Teen Sad","Male Baritone Warm","Male Bass Deep Sad","Male Javanese Deep","Male Dangdut Rough","Male Rap Sad Javanese","Male R&B Mellow","Male Choir Emotional","Female Choir Angelic","Mixed Duet Romantic Sad","Javanese Duet Male Female","Broken Couple Duet","Children Choir Sad","Gospel Choir Emotional","Vocaloid Female Sad","Vocaloid Male Sad","AI Female Ultra Emotional","AI Male Ultra Sad","Javanese Sindhen Female","Javanese Dalang Male","Sundanese Jaipong Female","Batak Power Female","Ambon Soul Male","Bugis Sad Male","Minang Slow Female","Malay Slow Male","Dangdut Koplo Female","Dangdut Koplo Male","Pop Ballad Male"];
+const moods=["Heartbroken Sad Galau Crying","Broken Crying Emotional Hurt","Sad Rainy Mellow Lonely","Happy Energetic Upbeat Joy","Romantic Love Dreamy Longing","Angry Betrayed Revenge Hurt","Healing Move On Sincere","Spiritual Calm Peaceful","Nostalgia Missing Longing","Jealous Suspicious","Hopeful Rising Spirit","Anxious Restless Night","Mellow Coffee Rain","Dark Depressive Deep Sad","Cheerful Dangdut Happy","Javanese Ambyar Broken","Javanese Love Longing","Javanese Angry Disappointed","Sundanese Love Longing","Batak Deep Love"];
+const genres=["Pop Ballad Slow Rock","Emotional Pop Sad Ballad","Indie Pop Mellow","R&B Slow Soulful","Acoustic Ballad Guitar","Javanese Pop Sad Ambyar","Campursari Modern","Dangdut Koplo Slow","Dangdut Original Slow","Keroncong Modern","Gamelan Javanese Lo-fi","Gamelan Balinese Energetic","Koplo East Java","Pop Javanese Koplo","Sholawat Pop","Reggae Mellow","Rock Ballad 90s","Metal Ballad","EDM Sad Emotional","Lo-fi Hip Hop Sad","Jazz Mellow Night","Blues Sad Guitar","Country Sad Story","Trap Sad Melodic","Drill Sad Javanese","K-Pop Ballad Sad","J-Pop Emotional","Arabic Pop Sad","Indian Bollywood Sad","Sundanese Pop Mellow","Batak Pop Tapanuli","Ambon Pop Mellow","Malay Deli Slow","DJ Remix Slow Sad","Funky Pop Happy","Disco 80s Mellow","Classical Piano Sad","Orchestra Emotional","Folk Acoustic Story","Gospel Choir Emotional","Acapella Emotional","Children Sad Song","Lullaby Sad Mother","Trap Javanese","Koplo Ambyar Full"];
