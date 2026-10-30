@@ -1,0 +1,10 @@
+{
+  "name": "BIXTONE MUSIC AI GENERATOR BY BIXLABS BOYOLALI INDONESIA",
+  "short_name": "BIXTONE AI",
+  "description": "WUJUDKAN MIMPI DAN CIPTAKAN LAGU TANPA BATAS",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#0066ff",
+  "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/138/138817.png","sizes": "512x512","type": "image/png"}]
+}
