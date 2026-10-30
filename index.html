@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIXTONE Music AI Generator - Bixlabs</title>
+<style>
+:root{--primary:#00d4ff;--secondary:#ffd700;--bg1:#000428;--bg2:#004e92}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#ffffff;font-family:Arial,Helvetica,sans-serif;min-height:100vh;padding:12px;line-height:1.5}
+.header{text-align:center;padding:16px;border:2px solid var(--primary);border-radius:12px;background:rgba(0,212,255,0.08);margin-bottom:12px}
+.logo{font-size:20px;font-weight:900;color:var(--primary);letter-spacing:1px}
+.tagline{color:var(--secondary);font-size:11px;margin-top:6px;font-weight:700}
+.card{background:rgba(255,255,255,0.07);border:1px solid rgba(0,212,255,0.3);border-radius:14px;padding:14px;margin-bottom:12px}
+.section{color:var(--primary);font-weight:800;font-size:13px;margin:16px 0 6px;border-left:3px solid var(--primary);padding-left:8px;text-transform:uppercase}
+label{color:#cceeff;font-size:11px;margin:8px 0 4px;display:block;font-weight:600}
+select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--primary);background:rgba(0,0,0,0.6);color:#fff;font-size:12px}
+textarea{min-height:80px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip-container{display:flex;flex-wrap:wrap;gap:5px;max-height:150px;overflow-y:auto;padding:6px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid rgba(0,212,255,0.2)}
+.chip{padding:5px 9px;border-radius:16px;border:1px solid var(--primary);font-size:10px;cursor:pointer;background:rgba(0,212,255,0.1)}
+.chip.selected{background:var(--primary);color:#000;font-weight:800}
+.counter{font-size:10px;color:var(--secondary);margin-top:4px;text-align:right}
+.btn{width:100%;padding:12px;border-radius:10px;border:none;font-weight:800;font-size:12px;cursor:pointer;margin-top:8px}
+.btn-lyrics{background:linear-gradient(90deg,var(--secondary),#ff8c00);color:#000}
+.btn-generate{background:linear-gradient(90deg,var(--primary),#0077ff);color:#fff}
+.btn-download{background:#00ff88;color:#000;font-size:10px;padding:7px;margin-top:4px}
+.btn-share{background:rgba(255,255,255,0.1);border:1px solid var(--primary);color:var(--primary);font-size:10px;padding:7px}
+.player-section{margin-top:12px;background:rgba(0,0,0,0.5);border:1px solid var(--primary);border-radius:10px;padding:12px;display:none}
+audio{width:100%;margin:8px 0}
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+.lib-item{background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:6px;padding:6px;margin-bottom:5px;font-size:10px;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">BIXTONE MUSIC AI GENERATOR</div>
+<div class="tagline">BY BIXLABS BOYOLALI INDONESIA</div>
+</div>
+
+<div class="card">
+<div class="section">A. Vocal Character (80 Options)</div>
+<select id="vocalChar"></select>
+<div class="grid2">
+<div><label>Vocal Type</label><select id="vocalType"><option>Female Solo</option><option>Male Solo</option><option>Female Duo</option><option>Male Duo</option><option>Mixed Duet</option><option>Children Choir</option><option>Female Choir</option><option>Adult Choir</option><option>Male Rapper</option><option>Female Rapper</option></select></div>
+<div><label>Vocal Age</label><select id="vocalAge"><option>Adult 25-35</option><option>Teen 16-20</option><option>Mature 35-50</option><option>Child 8-12</option><option>Senior 60+</option></select></div>
+</div>
+
+<div class="section">B. Mood and Emotion (80 Options)</div>
+<select id="mood"></select>
+<label>Emotion Intensity</label>
+<select id="moodIntensity"><option>Heartbroken Extreme</option><option>Sad Mellow Rainy</option><option>Broken Hope Still Love</option><option>Angry Betrayed</option><option>Happy Healing Move On</option><option>Romantic Longing</option><option>Spiritual Peaceful</option></select>
+
+<div class="section">C. Music Genre (150 Options)</div>
+<select id="genre"></select>
+<label>Sub Genre Fusion</label>
+<select id="subGenre"><option>Original</option><option>Javanese Pop Ballad</option><option>Dangdut Koplo x EDM</option><option>Keroncong x Jazz</option><option>Gamelan x Lo-fi</option><option>Javanese Pop x R&B</option><option>Rock x Kendang</option><option>Sholawat x Trap</option></select>
+
+<div class="section">D. World Instruments (150 Instruments - Max 8)</div>
+<label>Select up to 8 instruments (Click to select):</label>
+<div class="chip-container" id="instrumentBox"></div>
+<div class="counter" id="instCounter">0 / 8 selected</div>
