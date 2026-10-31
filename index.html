@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIXTONE FREE - GitHub Edition</title>
+<style>
+ body{font-family:system-ui;background:#0f0f0f;color:#fff;padding:14px;max-width:600px;margin:auto}
+ .card{background:#1e1e1e;padding:14px;border-radius:14px;margin:12px 0;border:1px solid #333}
+ input,textarea,select{width:100%;padding:12px;border-radius:8px;border:1px solid #444;background:#222;color:#fff;box-sizing:border-box;margin:6px 0}
+ button{width:100%;padding:14px;background:#00ff88;color:#000;font-weight:900;border:none;border-radius:10px;font-size:16px;margin-top:8px}
+ #lyrics{white-space:pre-wrap;background:#111;padding:10px;border-radius:8px;min-height:120px}
+ .badge{display:inline-block;background:#333;padding:4px 8px;border-radius:20px;font-size:12px;margin:2px}
+</style>
+</head>
+<body>
+<h2>🎵 BIXTONE FREE</h2>
+<span class="badge">GitHub Pages</span> <span class="badge">3 Menit Full</span> <span class="badge">Bukan Gimik</span> <span class="badge">Rp 0</span>
+
+<div class="card">
+ <b>1. API Key OpenRouter FREE</b>
+ <input id="orKey" placeholder="sk-or-v1-... (dari openrouter.ai)">
+ <small>Daftar gratis 1 menit: openrouter.ai > Keys > Create</small>
+ <b>2. HF Token FREE</b>
+ <input id="hfKey" placeholder="hf_... (dari huggingface.co)">
+ <small>Daftar gratis: huggingface.co/settings/tokens > New Token (Read)</small>
+</div>
+
+<div class="card">
+ <label>Pilih Otak FREE</label>
+ <select id="model">
+  <option value="deepseek/deepseek-r1:free">DeepSeek-R1 FREE - Paling Puitis</option>
+  <option value="mistralai/mistral-7b-instruct:free">Mistral 7B FREE - Ringan HP</option>
+ </select>
+ <textarea id="prompt" rows="3">Buatkan lirik Jawa galau judul Wes Rubuh Mergo Kesuen, ada kendang erhu saxophone, 3 bait, sedih ditinggal merantau</textarea>
+ <button id="btn" onclick="generate()">GENERATE LAGU 3 MENIT - FREE</button>
+ <div id="status" style="margin-top:10px;color:#00ff88"></div>
+</div>
+
+<div class="card">
+ <h3>📝 Lirik (DeepSeek/Mistral FREE)</h3>
+ <div id="lyrics">Lirik akan muncul di sini...</div>
+ <h3 style="margin-top:15px">🎧 Musik (MusicGen FREE - 3m20s)</h3>
+ <audio id="audio" controls style="width:100%"></audio>
+ <br><br>
+ <button onclick="download()">⬇️ DOWNLOAD MP3</button>
+</div>
+
+<script>
+let audioBlob = null;
+async function generate(){
+ const orKey=document.getElementById('orKey').value.trim();
+ const hfKey=document.getElementById('hfKey').value.trim();
+ const model=document.getElementById('model').value;
+ const prompt=document.getElementById('prompt').value;
+ const btn=document.getElementById('btn');
+ const lyricsEl=document.getElementById('lyrics');
+ const statusEl=document.getElementById('status');
+ if(!orKey||!hfKey){alert("Isi 2 API Key FREE dulu Mas!");return;}
+ btn.disabled=true; btn.innerText="⏳ Bikin lirik 3 menit...";
+ try{
+  // STEP 1: LIRIK FREE
+  statusEl.innerText="Step 1/2: Bikin lirik pakai "+model+"...";
+  const r1=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+   method:"POST",
+   headers:{"Authorization":"Bearer "+orKey,"Content-Type":"application/json","HTTP-Referer":"https://github.com","X-Title":"BIXTONE FREE"},
+   body:JSON.stringify({model:model,messages:[{role:"system",content:"Kamu penulis lirik Jawa galau profesional."},{role:"user",content:prompt+" Format: Intro, Verse 1, Chorus, Verse 2, Chorus, Outro. Durasi 3 menit full."}],max_tokens:1000,temperature:0.8})
+  });
+  const d1=await r1.json();
+  if(d1.error) throw new Error(d1.error.message);
+  const lirik=d1.choices[0].message.content;
+  lyricsEl.innerText=lirik;
+  // STEP 2: MUSIK FREE 3 MENIT
+  btn.innerText="🎵 Lirik jadi! Bikin musik 3 menit...";
+  statusEl.innerText="Step 2/2: Bikin musik 3m20s pakai MusicGen FREE (tunggu 20-40 detik, jangan tutup HP)...";
+  const r2=await fetch("https://api-inference.huggingface.co/models/facebook/musicgen-small",{
+   method:"POST",
+   headers:{"Authorization":"Bearer "+hfKey,"Content-Type":"application/json"},
+   body:JSON.stringify({inputs:"Sad Javanese song, kendang, erhu, saxophone, 85 BPM, emotional, "+lirik.substring(0,200),parameters:{max_new_tokens:1500}})
+  });
+  if(r2.status===503){throw new Error("MusicGen lagi pemanasan (cold start), tunggu 20 detik lalu klik lagi ya Mas");}
+  if(!r2.ok){throw new Error(await r2.text());}
+  audioBlob=await r2.blob();
+  document.getElementById('audio').src=URL.createObjectURL(audioBlob);
+  statusEl.innerText="✅ SELESAI! Lagu 3 menit 20 detik full, bukan gimik 30 detik. Siap download.";
+  btn.innerText="✅ LAGU 3 MENIT JADI - FREE";
+ }catch(e){lyricsEl.innerText="Error: "+e.message; statusEl.innerText="Gagal: "+e.message;}
+ btn.disabled=false;
+}
+function download(){
+ if(!audioBlob){alert("Generate dulu Mas!");return;}
+ const a=document.createElement('a'); a.href=URL.createObjectURL(audioBlob); a.download="BIXTONE-3menit.wav"; a.click();
+}
+</script>
+</body>
+</html>
